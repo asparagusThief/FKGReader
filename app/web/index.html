@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FKG Story Reader</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="reader">
+    <header class="app-topbar">
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">✳</span><div><h1>STORY READER</h1><p>FLOWER KNIGHT GIRL</p></div></div>
+      <div class="topbar-actions"><button id="library-button" class="primary-button">Library <span aria-hidden="true">▦</span></button><button id="settings-button" class="icon-button" title="Library & settings" aria-label="Library & settings">⚙</button></div>
+    </header>
+    <header class="reader-header">
+      <div class="story-heading"><span class="eyebrow" id="story-category"></span><h2 id="story-title">Take your time with a story.</h2><p id="story-subtitle"></p></div>
+      <div class="header-actions"><img id="story-banner" class="heading-banner" hidden alt=""><button id="favorite-button" class="icon-button" disabled title="Favorite story" aria-label="Favorite story">☆</button><button id="read-button" class="small-button" disabled aria-pressed="false" title="Mark this story as read manually">Mark as read</button></div>
+    </header>
+    <section class="stage-shell" id="stage-shell" aria-label="Story player">
+      <div class="stage" id="stage">
+        <div class="background" id="background"></div><div class="stage-shade"></div><div id="actors" class="actors"></div>
+        <div id="welcome" class="welcome"><h3>Choose your next story.</h3><button id="first-story" class="primary-button">Open library <span aria-hidden="true">→</span></button><div class="welcome-count" id="welcome-count"></div></div>
+        <div id="scene-label" class="scene-label" hidden></div>
+      </div>
+      <article id="messagecard-view" class="messagecard-view" tabindex="0" aria-label="メッセージカード content, scrollable" hidden>
+        <div class="messagecard-sheet">
+          <header class="messagecard-header"><div id="messagecard-icon"></div><div><p id="messagecard-season" class="eyebrow"></p><h3 id="messagecard-sender" lang="ja"></h3><p id="messagecard-title" lang="ja"></p></div><span class="messagecard-stamp" aria-hidden="true">✿</span></header>
+          <div class="messagecard-content">
+            <div id="messagecard-body" class="messagecard-body" lang="ja"></div>
+            <div id="messagecard-image"></div>
+          </div>
+          <div id="messagecard-actions" class="messagecard-actions" hidden><button id="messagecard-edit" class="small-button" hidden>Edit translation</button></div>
+        </div>
+      </article>
+      <section id="theater-view" class="theater-view" aria-label="Theater player" hidden>
+        <video id="theater-video" controls playsinline preload="metadata" aria-label="Theater video" hidden></video>
+        <p id="theater-status" role="status"></p>
+        <p id="theater-note" class="small" hidden>Video audio uses the player's volume control.</p>
+      </section>
+      <div id="choices" class="choices" aria-label="Story choices" hidden></div>
+      <div class="dialogue" id="dialogue" hidden>
+        <div class="speaker-line"><span id="speaker" lang="ja"></span><span id="speaker-translation" lang="zh-Hans" hidden></span><span id="message-number"></span></div>
+        <div class="message-columns"><div class="message" id="message" lang="ja" aria-live="polite" tabindex="0" aria-label="Japanese original, scrollable"></div><div class="message translation-message" id="message-translation" lang="zh-Hans" aria-live="polite" tabindex="0" aria-label="Chinese translation, scrollable" hidden></div></div>
+        <div class="dialogue-bottom"><span id="reading-hint" role="status"></span><div class="dialogue-actions"><button id="edit-translation" class="edit-line-button" hidden>Edit translation</button><button id="advance" class="advance-button" aria-label="Next line">Next ▸</button></div></div>
+      </div>
+    </section>
+    <footer class="reader-controls">
+      <div class="nav-controls"><button id="previous" disabled>← Previous</button><button id="auto" disabled>Auto</button><button id="log-button" disabled>History</button><button id="restart" disabled>Restart</button></div>
+      <div class="view-controls"><button id="hide-text-button" disabled aria-pressed="false" title="Hide text temporarily (H). Click the scene to show it again.">Hide text</button><button id="mode-button" title="Switch between illustrated and text-only views">Illustrated</button><button id="audio-button">Sound off</button><button id="reading-settings-button">Reading settings</button><button id="diagnostics" disabled>Assets</button></div>
+    </footer>
+  </main>
+  <dialog id="library-dialog" class="library-dialog" aria-labelledby="library-title">
+    <div class="library-header"><div><h2 id="library-title">Library</h2></div><button data-close class="icon-button" aria-label="Close library">×</button></div>
+    <div class="catalog-layout">
+      <nav id="category-rail" class="category-rail" aria-label="Story categories"><button id="category-all" class="category-all" lang="ja">すべてのカテゴリ</button><div id="category-gallery" class="category-gallery" lang="ja"></div><div class="library-footer" hidden><span id="asset-summary"></span></div></nav>
+      <section class="catalog-main">
+        <div class="catalog-toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search titles, characters or IDs" aria-label="Search stories"><kbd>/</kbd></label><div class="library-tabs"><button id="all-tab" class="active">Browse</button><button id="favorite-tab">Favorites</button></div></div>
+        <div class="catalog-heading"><div><h3 id="catalog-title" lang="ja">すべてのカテゴリ</h3><p id="catalog-path" lang="ja" hidden></p></div><button id="catalog-back" class="small-button" hidden>← Back to list</button><span id="story-total">Loading…</span></div>
+        <select id="category" aria-label="Story category selection" hidden><option value="">すべてのカテゴリ</option></select><select id="group" aria-label="Story group selection" hidden><option value="">すべてのグループ</option></select>
+        <div id="group-panel" class="group-panel" hidden><label class="group-search"><input id="group-search" type="search" placeholder="Filter events, chapters or characters…" aria-label="Filter story groups"></label><div id="group-gallery" class="group-gallery"></div></div>
+        <div class="story-list" id="story-list" aria-label="Story list"></div>
+      </section>
+    </div>
+  </dialog>
+  <dialog id="log-dialog" class="log-dialog" aria-labelledby="log-title"><div class="modal-header"><div><h3 id="log-title">History</h3></div><div class="modal-header-actions"><button id="log-audio-button" class="small-button" aria-pressed="false">Sound off</button><button id="log-reading-settings" class="small-button">Reading settings</button><button data-close class="icon-button" aria-label="Close history">×</button></div></div><p id="log-summary" class="muted"></p><label class="log-search"><input id="log-search" type="search" placeholder="Find a character or line…" aria-label="Search history"></label><div id="log-list" class="log-list" tabindex="0" aria-label="Previously viewed dialogue"></div><div class="log-footer"><button id="log-bottom" class="small-button">Scroll to bottom ↓</button></div></dialog>
+  <dialog id="reading-settings-dialog" aria-labelledby="reading-settings-title">
+    <div class="modal-header"><h3 id="reading-settings-title">Reading settings</h3><button data-close class="icon-button" aria-label="Close reading settings">×</button></div>
+    <div class="reading-setting"><label for="reading-language">Language</label><select id="reading-language"><option value="ja">Japanese only</option><option value="zh">Chinese only</option><option value="bilingual">Bilingual</option></select></div>
+    <div class="reading-setting"><span>Custom translations</span><button id="open-glossary" class="small-button">Glossary</button></div>
+    <div class="reading-setting"><span>Personal revisions</span><button id="open-revisions" class="small-button">Import / export</button></div>
+    <div class="reading-setting"><span>Column order</span><div class="reading-order"><span id="reading-language-order"></span><button id="swap-reading-languages" class="small-button" aria-label="Swap bilingual columns">Swap ⇄</button></div></div>
+    <div class="reading-setting"><label for="font-size">Font size</label><div class="reading-height"><input id="font-size" type="range" min="12" max="30" step="1" value="21" aria-label="Font size"><input id="font-size-number" class="setting-number" type="number" min="12" max="30" step="1" value="21" aria-label="Font size value"><output id="font-size-value" for="font-size-number">px</output></div></div>
+    <div class="reading-setting"><label for="dialogue-height">Box height</label><div class="reading-height"><input id="dialogue-height" type="range" min="140" max="480" step="1" value="230"><input id="dialogue-height-number" class="setting-number" type="number" min="140" max="480" step="1" value="230" aria-label="Box height value"><output id="dialogue-height-value" for="dialogue-height-number">px · Auto</output></div></div>
+    <div class="reading-setting"><label for="dialogue-opacity">Box opacity</label><div class="reading-height"><input id="dialogue-opacity" type="range" min="0" max="100" step="1" value="85" title="0% transparent · 100% opaque"><input id="dialogue-opacity-number" class="setting-number" type="number" min="0" max="100" step="1" value="85" aria-label="Box opacity value"><output id="dialogue-opacity-value" for="dialogue-opacity-number">%</output></div></div>
+    <div class="reading-reset-actions"><button id="reset-font-size" class="small-button">Reset font size</button><button id="reset-dialogue-height" class="small-button">Reset height</button><button id="reset-dialogue-opacity" class="small-button">Reset opacity</button></div>
+    <div id="portrait-setting-row" class="reading-setting"><span>Portraits</span><button id="portrait-settings" class="small-button" disabled>Portrait alignment</button></div>
+    <fieldset class="audio-settings">
+      <legend>Audio</legend>
+      <div class="reading-setting"><label for="bgm-volume">BGM volume</label><div class="reading-height"><input id="bgm-volume" type="range" min="0" max="100" step="1" value="26"><input id="bgm-volume-number" class="setting-number" type="number" min="0" max="100" step="1" value="26" aria-label="BGM volume value"><output id="bgm-volume-value" for="bgm-volume-number">%</output></div></div>
+      <div class="reading-setting"><label for="voice-volume">Voice volume</label><div class="reading-height"><input id="voice-volume" type="range" min="0" max="100" step="1" value="80"><input id="voice-volume-number" class="setting-number" type="number" min="0" max="100" step="1" value="80" aria-label="Voice volume value"><output id="voice-volume-value" for="voice-volume-number">%</output></div></div>
+      <div class="reading-setting"><label for="se-volume">SFX volume</label><div class="reading-height"><input id="se-volume" type="range" min="0" max="100" step="1" value="80"><input id="se-volume-number" class="setting-number" type="number" min="0" max="100" step="1" value="80" aria-label="SFX volume value"><output id="se-volume-value" for="se-volume-number">%</output></div></div>
+    </fieldset>
+  </dialog>
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <div class="modal-header"><h3 id="settings-title">Library & settings</h3><button data-close class="icon-button" aria-label="Close settings">×</button></div>
+    <div class="reading-setting"><label for="ui-language">Interface language</label><select id="ui-language"><option value="en" lang="en">English</option><option value="zh-Hans" lang="zh-Hans">简体中文</option></select></div>
+    <div class="modal-actions"><button id="settings-glossary" class="small-button">Glossary</button></div>
+    <form id="player-name-form" class="player-name-form">
+      <label for="player-name">Player name</label>
+      <div class="player-name-controls"><input id="player-name" type="text" maxlength="40" placeholder="団長" autocomplete="off" aria-describedby="player-name-hint"><button type="submit" class="primary-button">Save</button></div>
+      <p id="player-name-hint" class="muted small">Used in メッセージカード. Leave blank to use 「団長」.</p>
+    </form>
+    <section class="progress-reset-section"><h4>Reading progress</h4><p class="muted small">Start every story from the beginning. Read marks, favorites, preferences and personal translations are kept.</p><button id="reset-progress" class="small-button">Reset all reading progress</button></section>
+    <details class="local-files"><summary>Local files</summary><div id="source-info" class="source-info"></div></details><div class="modal-actions"><button id="refresh" class="primary-button">Rescan library</button><button id="import-button" class="small-button">Import titles / master data</button><input id="import-file" type="file" accept=".json,application/json" hidden></div>
+  </dialog>
+  <dialog id="reset-progress-dialog" aria-labelledby="reset-progress-title"><div class="modal-header"><h3 id="reset-progress-title">Reset all reading progress?</h3><button data-close class="icon-button" aria-label="Cancel progress reset">×</button></div><p class="muted">All saved reading positions and History in this browser will be cleared. The open story will restart from the beginning.</p><p class="muted">Read marks, favorites, display and audio settings, Glossary and personal revisions will not change.</p><p id="reset-progress-status" class="muted small" role="status" hidden></p><div class="modal-actions"><button id="reset-progress-confirm" class="primary-button">Reset reading progress</button><button id="reset-progress-cancel" class="small-button">Cancel</button></div></dialog>
+  <dialog id="diagnostics-dialog"><div class="modal-header"><h3>Story assets</h3><button data-close class="icon-button" aria-label="Close asset details">×</button></div><p id="diagnostics-summary" class="muted"></p><div id="diagnostics-list"></div><button id="export-missing" class="small-button">Export missing assets</button></dialog>
+  <dialog id="glossary-dialog" class="glossary-dialog" aria-labelledby="glossary-title">
+    <div class="modal-header"><div><h3 id="glossary-title">Glossary</h3></div><button data-close class="icon-button" aria-label="Close glossary">×</button></div>
+    <div class="glossary-toolbar"><input id="glossary-search" type="search" placeholder="Japanese, Chinese or term ID…" aria-label="Search glossary"><select id="glossary-scope" aria-label="Glossary scope"><option value="all">All terms</option><option value="story">This story</option><option value="custom">Customized</option></select></div>
+    <div class="glossary-layout"><section class="glossary-browser" aria-label="Term browser"><div class="glossary-types" role="group" aria-label="Term category"><button id="glossary-characters" type="button" aria-pressed="true">Characters</button><button id="glossary-other" type="button" aria-pressed="false">Other terms</button></div><p id="glossary-count" class="muted small" role="status"></p><div id="glossary-kana-filters" class="glossary-kana-filters"><div id="glossary-kana-rows" class="glossary-kana-buttons" role="group" aria-label="Kana rows"></div><div id="glossary-kana-initials" class="glossary-kana-buttons glossary-kana-initials" role="group" aria-label="Kana initials" hidden></div></div><div id="glossary-list" class="glossary-list" aria-label="Translation terms"></div></section>
+      <form id="glossary-form" class="glossary-editor">
+        <div class="glossary-editor-heading"><span id="glossary-term-avatar" hidden aria-hidden="true"></span><div><h4 id="glossary-term-name" lang="ja">Choose a term</h4><p id="glossary-term-id" class="muted small"></p></div></div>
+        <div id="glossary-fields" hidden><p id="glossary-term-scope" class="muted small"></p><label>Default translation<span id="glossary-default" lang="zh-Hans"></span></label>
+          <label for="glossary-custom">Your translation</label><input id="glossary-custom" type="text" maxlength="120" autocomplete="off" lang="zh-Hans" placeholder="Leave blank to use the default">
+          <div class="modal-actions"><button type="submit" class="primary-button">Save translation</button><button id="glossary-reset" type="button" class="small-button">Use default</button></div>
+          <p id="glossary-save-status" class="muted small" role="status"></p>
+        </div>
+      </form>
+    </div>
+  </dialog>
+  <dialog id="translation-editor" class="translation-editor" aria-labelledby="translation-editor-title">
+    <div class="modal-header"><div><h3 id="translation-editor-title">Edit translation</h3></div><button id="translation-editor-close" class="icon-button" aria-label="Close translation editor">×</button></div>
+    <p id="translation-edit-location" class="muted small"></p>
+    <form id="translation-edit-form">
+      <div class="translation-edit-body">
+      <div id="translation-field-row" class="reading-setting"><label for="translation-edit-field">Field</label><select id="translation-edit-field"></select></div>
+      <label id="translation-source-label">Japanese original</label><p id="translation-edit-source" class="translation-source" lang="ja" aria-labelledby="translation-source-label"></p>
+      <label for="translation-edit-text">Your translation</label><textarea id="translation-edit-text" rows="4" maxlength="30000" lang="zh-Hans" spellcheck="false" aria-describedby="translation-edit-hint"></textarea>
+      <p id="translation-edit-hint" class="muted small">Keep {{term:…}} links to follow your Glossary. Select a term below to insert a link. Plain text will not follow Glossary changes. Keep %user% if present in the original.</p>
+      <div id="translation-edit-terms" class="translation-edit-terms" role="group" aria-label="Insert glossary link"></div>
+      <div class="modal-actions"><button id="translation-unlink" type="button" class="small-button">Convert links to plain text</button></div>
+      <label>Preview</label><div id="translation-edit-preview" class="translation-preview" lang="zh-Hans"></div>
+      </div>
+      <div class="translation-edit-footer">
+      <div class="modal-actions"><button id="translation-edit-save" type="submit" class="primary-button">Save revision</button><button id="translation-edit-reset" type="button" class="small-button">Use default</button><button id="translation-discard" type="button" class="small-button" hidden>Discard changes</button></div>
+      <p id="translation-edit-status" class="muted small" role="status"></p>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="revision-manager" aria-labelledby="revision-manager-title">
+    <div class="modal-header"><h3 id="revision-manager-title">Personal revisions</h3><button data-close class="icon-button" aria-label="Close personal revisions">×</button></div>
+    <p id="revision-summary" class="muted" role="status"></p>
+    <p class="muted small">Saved in data/personal-translations.json on this computer, separately from original translations. Matching Japanese lines keep their revisions after translation updates. Changed original lines are left inactive.</p>
+    <div class="modal-actions"><a id="revision-export" class="small-button" href="/api/personal-translations" download="fkg-personal-translations.json">Export revisions</a><button id="revision-import" class="small-button">Choose revisions file</button><input id="revision-file" type="file" accept=".json,application/json" hidden></div>
+    <div id="revision-import-options" hidden><p id="revision-import-preview" class="muted small"></p><label class="revision-conflict"><input id="revision-replace" type="checkbox">Replace existing revisions for matching fields</label><p class="muted small">Unchecked: keep existing revisions. Import merges files; it never removes unrelated revisions.</p><button id="revision-import-apply" class="primary-button">Import revisions</button></div>
+    <p id="revision-import-status" class="muted small" role="status"></p>
+  </dialog>
+  <dialog id="portrait-dialog" aria-labelledby="portrait-title">
+    <div class="modal-header"><h3 id="portrait-title">Portrait alignment</h3><button data-close class="icon-button" aria-label="Close portrait alignment">×</button></div>
+    <div class="portrait-picker"><span>Character</span><select id="portrait-character" hidden aria-hidden="true" tabindex="-1"></select><div id="portrait-character-list" class="portrait-characters" role="group" aria-label="Select current character"></div></div>
+    <p id="portrait-reference" class="muted small"></p>
+    <div class="portrait-adjustment"><label for="portrait-scale">Scale</label><input id="portrait-scale" type="range" min="70" max="140" step="1" value="100" aria-label="Portrait scale"><input id="portrait-scale-number" class="setting-number" type="number" min="70" max="140" step="1" value="100" aria-label="Portrait scale value"><output id="portrait-scale-value" for="portrait-scale-number">%</output></div>
+    <div class="portrait-adjustment"><label for="portrait-y">Vertical offset</label><input id="portrait-y" type="range" min="-20" max="20" step="1" value="0" aria-label="Portrait vertical offset"><input id="portrait-y-number" class="setting-number" type="number" min="-20" max="20" step="1" value="0" aria-label="Portrait vertical offset value"><output id="portrait-y-value" for="portrait-y-number">%</output></div>
+    <p class="muted small">Positive values move down; negative values move up. Settings apply to this pose and all its expressions.</p>
+    <div class="modal-actions"><button id="portrait-reset" class="small-button">Reset this pose</button></div>
+  </dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

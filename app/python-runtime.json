@@ -1,0 +1,19 @@
+{
+  "version": "3.13.16",
+  "pathFile": "python313._pth",
+  "checksumSource": "https://www.python.org/ftp/python/3.13.16/ (embed ZIP .sigstore message digests)",
+  "packages": {
+    "amd64": {
+      "url": "https://www.python.org/ftp/python/3.13.16/python-3.13.16-embed-amd64.zip",
+      "sha256": "97dae5274cc54867065e8d5a3226e48c35017ed332a0fdb0e27d5b5821961297"
+    },
+    "arm64": {
+      "url": "https://www.python.org/ftp/python/3.13.16/python-3.13.16-embed-arm64.zip",
+      "sha256": "790d097697a2020477549a6764d89d22194c88d6e42caebcb2db63791e004c94"
+    },
+    "win32": {
+      "url": "https://www.python.org/ftp/python/3.13.16/python-3.13.16-embed-win32.zip",
+      "sha256": "0a3b162281b0a8e4d95d748e40ec2db9927086c7ec4231a5c8d29f91a1c2ba89"
+    }
+  }
+}
